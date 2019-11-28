@@ -3,10 +3,6 @@
 class Lacuna:
 
     def __init__(self, tamanho, inicio, fim):
-        if tamanho >= fim - inicio:
-            print("Erro ao tentar alocar lacuna com tamanho {} no espaco de inicio {} e fim {}".format(tamanho, inicio, fim))
-            raise NameError('Tamanho da lacuna maior que espaco para alocar')
-
         self.__tamanho = tamanho
         self.__inicio = inicio
         self.__fim = fim
@@ -21,3 +17,13 @@ class Lacuna:
     def get_fim(self):
         return self.__fim
 
+    def set_inicio(self, inicio):
+        self.__inicio = inicio
+        self.__update_tamanho()
+
+    def set_fim(self, fim):
+        self.__fim = fim
+        self.__update_tamanho()
+
+    def __update_tamanho(self):
+        self.__tamanho = self.__fim - self.__inicio + 1

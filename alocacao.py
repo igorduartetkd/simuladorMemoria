@@ -20,7 +20,8 @@ class Alocacao:
 
     def set_inicio(self, inicio):
         self.__inicio = inicio
+        self.__update_fim()
 
-    def set_fim(self, fim):
-        self.__fim = fim
+    def __update_fim(self):
+        self.__fim = self.__inicio + self.__processo.get_tamanho() - 1
 

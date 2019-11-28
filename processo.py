@@ -8,6 +8,7 @@ class Processo:
         self.__pid = Processo.id
         Processo.id += 1
         self.__tamanho = tamanho
+        print("Processo {} criado".format(self.__pid))
 
     # GETTERS AND SETTERS
     def get_pid(self):
