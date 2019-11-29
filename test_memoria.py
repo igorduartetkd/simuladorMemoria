@@ -52,3 +52,38 @@ class MemoriaTest(unittest.TestCase):
         mensagem_erro = self.get_msg_erro(pos_esperada, alocacao.get_inicio())
         assert alocacao.get_inicio() == pos_esperada, mensagem_erro
 
+
+    def test_best_fit(self):
+        memoria,pids = self.get_memoria(Metodo.BEST_FIT)
+        memoria.remover_processo(pids[1])
+        memoria.remover_processo(pids[2])
+        memoria.remover_processo(pids[3])
+        memoria.remover_processo(pids[5])
+        memoria.remover_processo(pids[6])
+        pid = memoria.criar_processo(50)
+        alocacoes = memoria.get_alocacoes()
+        alocacoes = [a for a in alocacoes if a.get_processo().get_pid() == pid]
+        assert len(alocacoes) == 1, 'Processo nao foi encontrado nas alocacoes'
+        alocacao = alocacoes[0]
+        pos_esperada = 141
+        mensagem_erro = self.get_msg_erro(pos_esperada, alocacao.get_inicio())
+        assert alocacao.get_inicio() == pos_esperada, mensagem_erro
+
+
+
+    def test_worst_fit(self):
+        memoria,pids = self.get_memoria(Metodo.WORST_FIT)
+        memoria.remover_processo(pids[1])
+        memoria.remover_processo(pids[2])
+        memoria.remover_processo(pids[4])
+        memoria.remover_processo(pids[5])
+        memoria.remover_processo(pids[6])
+        pid = memoria.criar_processo(50)
+        alocacoes = memoria.get_alocacoes()
+        alocacoes = [a for a in alocacoes if a.get_processo().get_pid() == pid]
+        assert len(alocacoes) == 1, 'Processo nao foi encontrado nas alocacoes'
+        alocacao = alocacoes[0]
+        pos_esperada = 101
+        mensagem_erro = self.get_msg_erro(pos_esperada, alocacao.get_inicio())
+        assert alocacao.get_inicio() == pos_esperada, mensagem_erro
+

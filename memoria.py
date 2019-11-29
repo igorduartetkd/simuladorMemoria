@@ -97,12 +97,31 @@ class Memoria:
         else:
             raise NameError('Espaco insuficiente na memoria')
 
-
     def __best_fit(self, alocacao):
-        return
+        i_lacunas_adequadas = [self.__lacunas.index(lacuna) for lacuna in self.__lacunas if lacuna.get_tamanho() >= alocacao.get_processo().get_tamanho()]
+        if i_lacunas_adequadas:
+            sobras = {i: self.__lacunas[i].get_tamanho() - alocacao.get_processo().get_tamanho() for i in i_lacunas_adequadas}  # calculando distancias de onde parou
+            i = min(sobras, key=sobras.get) # pegando a lacuna com a menor sobra
+            alocacao.set_inicio(self.__lacunas[i].get_inicio())
+            self.__alocacoes.append(alocacao)
+            self.__lacunas[i].set_inicio(alocacao.get_fim() + 1)
+            if self.__lacunas[i].get_tamanho() <= 0:
+                del self.__lacunas[i]
+        else:
+            raise NameError('Espaco insuficiente na memoria')
 
     def __worst_fit(self, alocacao):
-        return
+        i_lacunas_adequadas = [self.__lacunas.index(lacuna) for lacuna in self.__lacunas if lacuna.get_tamanho() >= alocacao.get_processo().get_tamanho()]
+        if i_lacunas_adequadas:
+            sobras = {i: self.__lacunas[i].get_tamanho() - alocacao.get_processo().get_tamanho() for i in i_lacunas_adequadas}  # calculando distancias de onde parou
+            i = max(sobras, key=sobras.get)  # pegando a lacuna com a menor sobra
+            alocacao.set_inicio(self.__lacunas[i].get_inicio())
+            self.__alocacoes.append(alocacao)
+            self.__lacunas[i].set_inicio(alocacao.get_fim() + 1)
+            if self.__lacunas[i].get_tamanho() <= 0:
+                del self.__lacunas[i]
+        else:
+            raise NameError('Espaco insuficiente na memoria')
 
     # AUXILIARES
     def __gerar_lacunas(self, alocacao):
