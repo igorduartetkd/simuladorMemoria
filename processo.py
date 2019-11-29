@@ -2,13 +2,13 @@
 
 
 class Processo:
-    id = 1
+    id = 0
 
     def __init__(self, tamanho):
         self.__pid = Processo.id
         Processo.id += 1
         self.__tamanho = tamanho
-        print("Processo {} criado".format(self.__pid))
+        print("Processo {} criado. Tamanho: {}".format(self.__pid, self.__tamanho))
 
     # GETTERS AND SETTERS
     def get_pid(self):

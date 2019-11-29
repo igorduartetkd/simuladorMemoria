@@ -14,6 +14,7 @@ class Memoria:
         self.__alocacoes = []
         lacuna = Lacuna(tamanho, 1, tamanho)
         self.__lacunas = [lacuna]
+        self.__aux_next = 0
 
     # GETTERS AND SETTERS
 
@@ -56,8 +57,9 @@ class Memoria:
         index = [self.__alocacoes.index(a) for a in self.__alocacoes if a.get_processo().get_pid() == pid]
         if index:
             self.__gerar_lacunas(self.__alocacoes[index[0]])
+            tam = self.__alocacoes[index[0]].get_processo().get_tamanho()
             del self.__alocacoes[index[0]]
-            print("Processo {} removido".format(pid))
+            print("Processo {} removido. Tamanho: {}".format(pid, tam))
         else:
             print("Processo {} inexistente".format(pid))
 
@@ -78,7 +80,23 @@ class Memoria:
             del self.__lacunas[indice_lacuna]
 
     def __next_fit(self, alocacao):
-        return
+        i_lacunas_adequadas = [self.__lacunas.index(lacuna) for lacuna in self.__lacunas if lacuna.get_tamanho() >= alocacao.get_processo().get_tamanho()]
+
+        if i_lacunas_adequadas:
+            distancias = {i: self.__lacunas[i].get_inicio() - self.__aux_next for i in i_lacunas_adequadas}  # calculando distancias de onde parou
+            distancias_negativas = {k: v + self.__tamanho for k, v in distancias.items() if v < 0}  # removendo valores negativos
+            distancias = {k: v for k, v in distancias.items() if v >= 0}  # removendo valores negativos
+            distancias.update(distancias_negativas)
+            i = min(distancias, key=distancias.get) # pegando a lacuna mais proxima que cabe
+            alocacao.set_inicio(self.__lacunas[i].get_inicio())
+            self.__alocacoes.append(alocacao)
+            self.__lacunas[i].set_inicio(alocacao.get_fim() + 1)
+            if self.__lacunas[i].get_tamanho() <= 0:
+                del self.__lacunas[i]
+            self.__aux_next = alocacao.get_inicio()
+        else:
+            raise NameError('Espaco insuficiente na memoria')
+
 
     def __best_fit(self, alocacao):
         return
@@ -101,17 +119,3 @@ class Memoria:
             self.__lacunas.append(Lacuna(alocacao.get_processo().get_tamanho(),
                                          alocacao.get_inicio(),
                                          alocacao.get_fim()))
-
-
-memoria = Memoria(10, Metodo.FIRST_FIT)
-memoria.criar_processo(1)
-memoria.criar_processo(4)
-memoria.criar_processo(5)
-print([(alocacao.get_inicio(), alocacao.get_fim(), alocacao.get_processo().get_pid()) for alocacao in memoria.get_alocacoes()])
-print([(lacuna.get_inicio(), lacuna.get_fim(), lacuna.get_tamanho()) for lacuna in memoria.get_lacunas()])
-memoria.remover_processo(2)
-print([(alocacao.get_inicio(), alocacao.get_fim(), alocacao.get_processo().get_pid()) for alocacao in memoria.get_alocacoes()])
-print([(lacuna.get_inicio(), lacuna.get_fim(), lacuna.get_tamanho()) for lacuna in memoria.get_lacunas()])
-memoria.criar_processo(3)
-print([(alocacao.get_inicio(), alocacao.get_fim(), alocacao.get_processo().get_pid()) for alocacao in memoria.get_alocacoes()])
-print([(lacuna.get_inicio(), lacuna.get_fim(), lacuna.get_tamanho()) for lacuna in memoria.get_lacunas()])
