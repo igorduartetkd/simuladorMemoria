@@ -4,6 +4,7 @@ from alocacao import Alocacao
 from processo import Processo
 from metodo import Metodo
 from lacuna import Lacuna
+from espacoMemoria import EspacoMemoria
 
 
 class Memoria:
@@ -15,6 +16,7 @@ class Memoria:
         lacuna = Lacuna(tamanho, 1, tamanho)
         self.__lacunas = [lacuna]
         self.__aux_next = 0
+        print("Memoria de tamanho {} criada".format(tamanho))
 
     # GETTERS AND SETTERS
 
@@ -33,6 +35,10 @@ class Memoria:
     def get_porcentagem_uso(self):
         tamanhos = sum([alocacao.get_processo().get_tamanho() for alocacao in self.__alocacoes])
         return tamanhos * 100 / self.__tamanho
+
+    def get_espacos_ordem(self):
+        espacos = self.__lacunas + self.__alocacoes
+        return sorted(espacos, key=EspacoMemoria.get_inicio)
 
     # FUNCOES
 
@@ -66,18 +72,17 @@ class Memoria:
     # IMPLEMENTACAO DOS ALGORITMOS
 
     def __first_fit(self, alocacao):
-        indice_lacuna = -1
-        for lacuna in self.__lacunas:
-            if lacuna.get_tamanho() >= alocacao.get_processo().get_tamanho():
-                alocacao.set_inicio(lacuna.get_inicio())
-                self.__alocacoes.append(alocacao)
-                lacuna.set_inicio(alocacao.get_fim() + 1)
-                indice_lacuna = self.__lacunas.index(lacuna)
-                break
-        if indice_lacuna == -1:
+        i_lacunas_adequadas = [self.__lacunas.index(lacuna) for lacuna in self.__lacunas if lacuna.get_tamanho() >= alocacao.get_processo().get_tamanho()]
+        if i_lacunas_adequadas:
+            sobras = {i: self.__lacunas[i].get_inicio() for i in i_lacunas_adequadas}  # calculando distancias de onde parou
+            i = min(sobras, key=sobras.get)  # pegando a lacuna com a menor sobra
+            alocacao.set_inicio(self.__lacunas[i].get_inicio())
+            self.__alocacoes.append(alocacao)
+            self.__lacunas[i].set_inicio(alocacao.get_fim() + 1)
+            if self.__lacunas[i].get_tamanho() <= 0:
+                del self.__lacunas[i]
+        else:
             raise NameError('Espaco insuficiente na memoria')
-        if self.__lacunas[indice_lacuna].get_tamanho() <= 0:
-            del self.__lacunas[indice_lacuna]
 
     def __next_fit(self, alocacao):
         i_lacunas_adequadas = [self.__lacunas.index(lacuna) for lacuna in self.__lacunas if lacuna.get_tamanho() >= alocacao.get_processo().get_tamanho()]
