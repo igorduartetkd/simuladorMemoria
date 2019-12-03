@@ -18,6 +18,9 @@ class Memoria:
         self.__aux_next = 0
         print("Memoria de tamanho {} criada".format(tamanho))
 
+    def __del__(self):
+        Processo.id = 0
+
     # GETTERS AND SETTERS
 
     def get_tamanho(self):

@@ -103,6 +103,12 @@ class Aplicacao(Frame):
         self.container4.pack()
         self.itens_tela_principal.append(self.container4)
 
+        self.container5 = Frame(parent)
+        self.container5["pady"] = 10
+        self.container5["padx"] = 200
+        self.container5.pack()
+        self.itens_tela_principal.append(self.container5)
+
         self.msg1 = Label(self.container1, text="Memoria {} MB".format(self.tamanho))
         self.msg1["font"] = ("Arial", "12", "bold")
         self.msg1.pack()
@@ -112,8 +118,13 @@ class Aplicacao(Frame):
 
         self.msg2 = Label(self.container3, text="Criar processo")
         self.msg2["font"] = ("Arial", "10", "bold")
-        self.msg2.pack(side=LEFT)
+        self.msg2.pack()
         self.itens_tela_principal.append(self.msg2)
+
+        self.msg3 = Label(self.container3, text="Algoritmo: {}".format(Metodo.get_name(self.metodo)))
+        self.msg3["font"] = ("Arial", "10")
+        self.msg3.pack()
+        self.itens_tela_principal.append(self.msg3)
 
         self.msg3 = Label(self.container4, text="tamanho: ")
         self.msg3.pack(side=LEFT)
@@ -135,6 +146,13 @@ class Aplicacao(Frame):
         self.criar["command"] = partial(self.criar_processo, parent)
         self.criar.pack(side=LEFT)
         self.itens_tela_principal.append(self.criar)
+
+        self.voltar = Button(self.container5)
+        self.voltar["text"] = "VOLTAR"
+        self.voltar["width"] = 5
+        self.voltar["command"] = partial(self.voltar_tela_inicial, parent)
+        self.voltar.pack()
+        self.itens_tela_principal.append(self.voltar)
 
     def criar_memoria(self, parent):
         tamanho = self.gui_tamanho.get()
@@ -162,6 +180,10 @@ class Aplicacao(Frame):
         except NameError:
             self.popup_erro_processo()
 
+    def voltar_tela_inicial(self, parent):
+            del self.memoria
+            self.apagar_itens(self.itens_tela_principal)
+            self.tela_inicial(parent)
 
     def popupmsg(self, processo):
         msg = "Deseja remover o processo {}?".format(processo)
